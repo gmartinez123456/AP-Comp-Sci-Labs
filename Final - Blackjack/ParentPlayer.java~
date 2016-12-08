@@ -1,0 +1,68 @@
+import java.util.*;
+
+public class ParentPlayer {
+    private String name;
+    private int    money;
+    private int    bet;
+    private ArrayList<Card> hand = new ArrayList<Card>();
+    
+    public ParentPlayer(String name, int money) {
+        this.name = name;
+        this.money = money;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public int getMoney() {
+        return this.money;
+    }
+    
+    public void bet(int bet) {
+        loseMoney(bet);
+    }
+    
+    public void winMoney(int money) {
+        this.money += money;
+    }
+    
+    public void loseMoney(int money) {
+        this.money -= money;
+    }
+    
+    public boolean loseCondition() {
+        if(this.money <= 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    public Card showFirstCard() {
+        return hand.get(0);
+    }
+    
+    public String showCards() {
+        String cards = "";
+        for(int i = 0; i < hand.size(); i++) {
+            cards += hand.get(i) + " ";
+        }
+        return cards;
+    }
+    
+    public void hit(Card card) {
+        hand.add(card);
+    }
+    
+    public int cardTotal() {
+        int total = 0;
+        for(int i = 0; i < hand.size(); i++) {
+            total += hand.get(i).getPointValue();
+        }
+        return total;
+    }
+    
+    public void newHand() {
+        hand.clear();
+    }
+}

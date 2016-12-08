@@ -1,0 +1,157 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+
+public class Game {
+    public Game() {
+        JFrame window               = new JFrame("Blackjack Initialization");
+        
+        JPanel rulesPanel           = new JPanel();
+        JButton rulesButton         = new JButton("Rules");
+        String rules                = "Who needs rules?";
+        
+        JPanel dealerPanel          = new JPanel();
+        JLabel dealerLabel          = new JLabel("Dealer");
+        JLabel dealerNameLabel      = new JLabel("Name:");
+        JTextField dealerNameInput  = new JTextField();
+        
+        JPanel playerPanel          = new JPanel();
+        JLabel playerLabel          = new JLabel("Player");
+        JLabel playerNameLabel      = new JLabel("Name:");
+        JTextField playerNameInput  = new JTextField();
+        JLabel playerMoneyLabel     = new JLabel("Starting Money:");
+        JTextField playerMoneyInput = new JTextField();
+        
+        JPanel gameInitPanel            = new JPanel();
+        JButton startButton         = new JButton("Start Game");
+        JButton exitButton          = new JButton("Quit Game");
+        
+        /*try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (InstantiationException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (IllegalAccessException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e, "Error", JOptionPane.ERROR_MESSAGE);
+        }*/
+        
+        rulesPanel.add(rulesButton);
+        rulesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(new JFrame(), rules, "Blackjack Rules", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+        
+        GridLayout dealerLayout = new GridLayout(1,3);
+        dealerPanel.setLayout(dealerLayout);
+        dealerPanel.add(dealerLabel);
+        dealerPanel.add(dealerNameLabel);
+        dealerPanel.add(dealerNameInput);
+        
+        GridLayout playerLayout = new GridLayout(1,5);
+        playerPanel.setLayout(playerLayout);
+        playerPanel.add(playerLabel);
+        playerPanel.add(playerNameLabel);
+        playerPanel.add(playerNameInput);
+        playerPanel.add(playerMoneyLabel);
+        playerPanel.add(playerMoneyInput);
+        
+        gameInitPanel.add(exitButton);
+        gameInitPanel.add(startButton);
+        
+        GridLayout mainLayout = new GridLayout(4,1);
+        window.setLayout(mainLayout);
+        window.add(rulesPanel);
+        window.add(dealerPanel);
+        window.add(playerPanel);
+        window.add(gameInitPanel);
+        
+        window.setSize(600, 165);
+        //window.setResizable(false);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.pack();
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
+        
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Dealer dealer = new Dealer();
+                Player player = new Player();
+                Deck deck = new Deck();
+                
+                Scanner playerInput = new Scanner(System.in);
+                
+                if(!dealerNameInput.getText().equals("") && !playerNameInput.getText().equals("") && !playerMoneyInput.getText().equals("")) {
+                    dealer = new Dealer(dealerNameInput.getText());
+                    try {
+                        player = new Player(playerNameInput.getText(), Integer.parseInt(playerMoneyInput.getText()));
+                    } catch(NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(new JFrame(), ex, "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    window.dispose();
+                    
+                    System.out.println("Welcome to Blackjack");
+                    System.out.println();
+                    System.out.println(dealer.getClass().getName() + ": " + dealer.getName() + "\tMoney: $" + dealer.getMoney());
+                    System.out.println(player.getClass().getName() + ": " + player.getName() + "\tMoney: $" + player.getMoney());
+                    System.out.println();
+                    while(player.loseCondition() == false) {
+                        System.out.println("You have $" + player.getMoney() + ". How much would you like to bet?");
+                        int bet = playerInput.nextInt();
+                        if(bet <= player.getMoney()) {
+                            player.bet(bet);
+                            System.out.println("You now have $" + player.getMoney() + ".");
+                            System.out.println("Dealing cards...");
+                            dealer.hit(deck.deal());
+                            player.hit(deck.deal());
+                            dealer.hit(deck.deal());
+                            player.hit(deck.deal());
+                            System.out.println(dealer.getName() + " has a " + dealer.showFirstCard());
+                            System.out.println(player.getName() + " has " + player.showCards());
+                            System.out.println("Hit or stand?");
+                            if(playerInput.next().equals("stand")) {
+                                
+                            } else {
+                                do {
+                                    player.hit(deck.deal());
+                                    System.out.println(player.getName() + " has " + player.showCards());
+                                    if(playerInput.next().equals("stand")) {
+                                        break;
+                                    }
+                                } while(playerInput.next().equals("hit") && player.cardTotal() <= 21);
+                                System.out.println("You lose this round.");
+                                dealer.newHand();
+                                player.newHand();
+                            }
+                        } else {
+                            System.out.println("You do not have enough money!");
+                        }
+                    }
+                    System.out.println("You Lose");
+                } else {
+                    JOptionPane.showMessageDialog(new JFrame(), "Fill in all the text forms.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+    }
+    
+    public static void main(String[] args) {
+        Game game = new Game();
+    }
+}
